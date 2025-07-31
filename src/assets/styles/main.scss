@@ -1,0 +1,19 @@
+@import "./scss/_config";
+
+body {
+  position: relative;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  background: #fff;
+  font-family: "Vazirmatn", sans-serif;
+
+  @import "./scss/layout";
+  @import "./scss/error-page";
+  @import "./scss/home";
+  @import "./scss/form_ui";
+  @import "./scss/dashboard";
+
+  main {
+    min-height: calc(100dvh - 300px);
+  }
+}
