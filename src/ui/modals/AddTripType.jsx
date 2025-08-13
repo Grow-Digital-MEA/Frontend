@@ -1,15 +1,15 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "react-bootstrap";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import InputField from "./../forms/InputField";
+import { useEffect } from "react";
+import InputField from "../forms/InputField";
 import SubmitButton from "../forms/SubmitButton";
 import axiosInstance from "../../utils/axiosInstance";
 import * as yup from "yup";
 
-export default function AddSlideModal({
+export default function AddTripType({
   showModal,
   setShowModal,
   item,
@@ -18,9 +18,8 @@ export default function AddSlideModal({
   const queryClient = useQueryClient();
 
   const schema = yup.object().shape({
-    title_ar: yup.string().required("Please enter title in Arabic"),
-    title_en: yup.string().required("Please enter name in English"),
-    link: yup.string().required("Please enter link"),
+    name_ar: yup.string().required("Please enter name in Arabic"),
+    name_en: yup.string().required("Please enter name in English"),
     image: yup.mixed().test("fileExist", "Please select an image", (value) => {
       if (item?.id) return true;
       return !!value;
@@ -38,9 +37,8 @@ export default function AddSlideModal({
     resolver: yupResolver(schema),
     mode: "onChange",
     defaultValues: {
-      title_ar: "",
-      title_en: "",
-      link: "",
+      name_ar: "",
+      name_en: "",
       image: null,
     },
   });
@@ -49,19 +47,19 @@ export default function AddSlideModal({
 
   useEffect(() => {
     if (item) {
-      setValue("title_ar", item.title_ar || "");
-      setValue("title_en", item.title_en || "");
-      setValue("link", item.link || "");
+      setValue("name_ar", item.name_ar || "");
+      setValue("name_en", item.name_en || "");
       setValue("image", item.image || null);
     }
   }, [item, setValue]);
 
-  const { mutate: saveSlide, isPending } = useMutation({
+  const { mutate: saveTripType, isPending } = useMutation({
     mutationFn: async (data) => {
+      console.log(data);
+
       const formData = new FormData();
-      formData.append("title_ar", data.title_ar);
-      formData.append("title_en", data.title_en);
-      formData.append("link", data.link);
+      formData.append("name_ar", data.name_ar);
+      formData.append("name_en", data.name_en);
 
       if (Object.prototype.toString.call(data.image) === "[object File]") {
         formData.append("image", data.image);
@@ -69,8 +67,8 @@ export default function AddSlideModal({
 
       const method = item?.id ? "put" : "post";
       const url = item?.id
-        ? `/dashboard/sliders/${item.id}`
-        : `/dashboard/sliders/store`;
+        ? `/dashboard/adventures/${item.id}`
+        : `/dashboard/adventures/store`;
 
       const response = await axiosInstance[method](url, formData, {
         headers: {
@@ -82,7 +80,7 @@ export default function AddSlideModal({
 
     onSuccess: (data) => {
       toast.success(data.message || "Saved successfully");
-      queryClient.invalidateQueries(["app-sliders"]);
+      queryClient.invalidateQueries(["trip-types"]);
       handleClose();
     },
 
@@ -123,42 +121,35 @@ export default function AddSlideModal({
       show={showModal}
       centered
       onHide={handleClose}
-      aria-labelledby="slider-modal"
+      aria-labelledby="trip-type-modal"
     >
       <Modal.Header closeButton>
-        <Modal.Title id="slider-modal">
-          {item?.id ? "Edit Slide" : "Add Slide"}
+        <Modal.Title id="trip-type-modal">
+          {item?.id ? "Edit Trip Type" : "Add Trip Type"}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <form
           className="form_ui d-flex flex-column gap-3"
-          onSubmit={handleSubmit(saveSlide)}
+          onSubmit={handleSubmit(saveTripType)}
         >
           <InputField
-            label="Title Arabic"
-            id="title_ar"
-            {...register("title_ar")}
-            error={errors?.title_ar?.message}
-            placeholder="Enter title in Arabic"
+            label="Name Arabic"
+            type="text"
+            id="name_ar"
+            {...register("name_ar")}
+            error={errors?.name_ar?.message}
+            placeholder="Enter name in Arabic"
           />
 
           <InputField
-            label="Title English"
-            id="title_en"
-            {...register("title_en")}
-            error={errors?.title_en?.message}
-            placeholder="Enter title in English"
-          />
-
-          <InputField
-            label="URL"
-            type="url"
-            id="link"
-            {...register("link")}
+            label="Name English"
+            type="text"
+            id="name_en"
+            {...register("name_en")}
             error={errors?.name_en?.message}
-            placeholder="Enter URL"
+            placeholder="Enter name in English"
           />
 
           <label htmlFor="image" className="image_fiels">

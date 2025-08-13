@@ -1,17 +1,60 @@
 import {
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
-export default function DataTable({ data, columns }) {
+export default function DataTable({
+  data,
+  columns,
+  page,
+  total,
+  setPage,
+  hasPagination = true,
+}) {
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
+    manualPagination: true,
+    pageCount: total,
+    state: {
+      pagination: {
+        pageIndex: page - 1,
+        pageSize: 8,
+      },
+    },
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (total <= maxVisiblePages) {
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      if (page > 3) {
+        pages.push("...");
+      }
+      const start = Math.max(2, page - 1);
+      const end = Math.min(total - 1, page + 1);
+
+      for (let i = start; i <= end; i++) {
+        if (i > 1 && i < total) {
+          pages.push(i);
+        }
+      }
+      if (page < total - 2) {
+        pages.push("...");
+      }
+      pages.push(total);
+    }
+
+    return pages;
+  };
 
   return (
     <div className="table-container">
@@ -44,42 +87,67 @@ export default function DataTable({ data, columns }) {
         </tbody>
       </table>
 
-      <div className="pagination">
-        <div className="pagination_controls">
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <i className="fa-light fa-angle-left"></i>
-          </button>
+      {hasPagination && (
+        <div className="pagination">
+          <div className="pagination_controls">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+              aria-label="First page"
+            >
+              <i className="fa-light fa-angle-double-left"></i>
+            </button>
 
-          <div className="numbers">
-            {[...Array(table.getPageCount()).keys()].map((page) => (
-              <button
-                key={page}
-                onClick={() => table.setPageIndex(page)}
-                className={
-                  page === table.getState().pagination.pageIndex ? "active" : ""
-                }
-              >
-                {page + 1}
-              </button>
-            ))}
+            <button
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+              aria-label="Previous page"
+            >
+              <i className="fa-light fa-angle-left"></i>
+            </button>
+
+            <div className="numbers">
+              {getPageNumbers().map((p, index) =>
+                p === "..." ? (
+                  <span key={`ellipsis-${index}`} className="ellipsis">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={page === p ? "active" : ""}
+                    aria-label={`Page ${p}`}
+                    aria-current={page === p ? "page" : undefined}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              onClick={() => setPage((prev) => Math.min(prev + 1, total))}
+              disabled={page === total}
+              aria-label="Next page"
+            >
+              <i className="fa-light fa-angle-right"></i>
+            </button>
+
+            <button
+              onClick={() => setPage(total)}
+              disabled={page === total}
+              aria-label="Last page"
+            >
+              <i className="fa-light fa-angle-double-right"></i>
+            </button>
           </div>
 
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <i className="fa-light fa-angle-right"></i>
-          </button>
+          <span>
+            Page {page} of {total}
+          </span>
         </div>
-
-        <span>
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-      </div>
+      )}
     </div>
   );
 }

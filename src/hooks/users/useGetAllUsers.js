@@ -1,18 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../../utils/axiosInstance";
 
-export default function useGetUsers(type, page = 1) {
+export default function useGetAllUsers(page = 1) {
   const { isLoading, data, error } = useQuery({
-    queryKey: ["users", type, page],
-    queryFn: () => getUsers(type, page),
+    queryKey: ["all-users", page],
+    queryFn: () => getUsers(page),
   });
   return { isLoading, data: data?.data, total: data?.total, error };
 }
 
-const getUsers = async (type, page) => {
+const getUsers = async (page) => {
   try {
     const res = await axiosInstance.get(
-      `/dashboard/users/type_filter?per_page=8&page=${page}&user_types_id=${type}`
+      `/dashboard/users?per_page=8&page=${page}`
     );
 
     if (res.status === 200) {

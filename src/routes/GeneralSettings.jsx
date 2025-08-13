@@ -1,21 +1,11 @@
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
-import JoditEditor from "jodit-react";
-import SubmitButton from "./../ui/forms/SubmitButton";
-import AppSlidersTab from "../components/dashboard/general-settings/AppSlidersTab";
+import SettingTab from "../components/dashboard/general-settings/SettingTab";
+import AppSlidersTab from "./../components/dashboard/general-settings/AppSlidersTab";
+import FaqsTab from "../components/dashboard/general-settings/FaqsTab";
 
 export default function GeneralSettings() {
-  const [key, setKey] = useState("terms-conditions");
-
-  const [terms, setTerms] = useState("");
-  const [privacy, setPrivacy] = useState("");
-  const [about, setAbout] = useState("");
-
-  const editorConfig = {
-    readonly: false,
-    placeholder: "Start typing here...",
-    height: 300,
-  };
+  const [key, setKey] = useState("about-us");
 
   return (
     <section className="form_ui">
@@ -30,55 +20,20 @@ export default function GeneralSettings() {
         onSelect={(k) => setKey(k)}
         className="mb-3"
       >
-        <Tab eventKey="terms-conditions" title="Terms & Conditions">
-          <div className="tab_wrapper">
-            <div className="input-field mb-3">
-              <h6>Terms & Conditions</h6>
-              <JoditEditor
-                value={terms}
-                config={editorConfig}
-                onChange={(content) => setTerms(content)}
-              />
-            </div>
-
-            <div className="d-flex justify-content-end">
-              <SubmitButton text="Save" />
-            </div>
-          </div>
+        <Tab eventKey="about-us" title="About Us">
+          <SettingTab title="About Us" type={1} />
         </Tab>
 
         <Tab eventKey="privacy-policy" title="Privacy Policy">
-          <div className="tab_wrapper">
-            <div className="input-field mb-3">
-              <h6>Privacy Policy</h6>
-              <JoditEditor
-                value={privacy}
-                config={editorConfig}
-                onChange={(content) => setPrivacy(content)}
-              />
-            </div>
-
-            <div className="d-flex justify-content-end">
-              <SubmitButton text="Save" />
-            </div>
-          </div>
+          <SettingTab title="Privacy Policy" type={2} />
         </Tab>
 
-        <Tab eventKey="about-us" title="About Us">
-          <div className="tab_wrapper">
-            <div className="input-field mb-3">
-              <h6>About Us</h6>
-              <JoditEditor
-                value={about}
-                config={editorConfig}
-                onChange={(content) => setAbout(content)}
-              />
-            </div>
+        <Tab eventKey="terms-conditions" title="Terms & Conditions">
+          <SettingTab title="Terms & Conditions" type={3} />
+        </Tab>
 
-            <div className="d-flex justify-content-end">
-              <SubmitButton text="Save" />
-            </div>
-          </div>
+        <Tab eventKey="faqs" title="FAQs">
+          <FaqsTab />
         </Tab>
 
         <Tab eventKey="app-sliders" title="App Sliders">

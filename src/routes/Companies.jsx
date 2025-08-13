@@ -1,8 +1,11 @@
+import { useState } from "react";
 import DataTable from "../components/dashboard/DataTabel";
 import useGetUsers from "../hooks/users/useGetUsers";
+import DataLoader from "../ui/DataLoader";
 
 export default function Companies() {
-  const { data: users, isLoading } = useGetUsers(3);
+  const [page, setPage] = useState(1);
+  const { data: users, total, isLoading } = useGetUsers(2, page);
   const cols = [
     {
       header: "ID",
@@ -39,7 +42,17 @@ export default function Companies() {
       </div>
 
       <div className="tab_wrapper">
-        {!isLoading && <DataTable data={users} columns={cols} />}
+        {isLoading ? (
+          <DataLoader />
+        ) : (
+          <DataTable
+            data={users}
+            columns={cols}
+            page={page}
+            total={Math.ceil(total / 8)}
+            setPage={setPage}
+          />
+        )}
       </div>
     </section>
   );
