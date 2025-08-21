@@ -1,9 +1,9 @@
-import Hero from "../components/landing/Hero";
-import About from "../components/landing/About";
-import How from "../components/landing/How";
-import Experience from "../components/landing/Experience";
-import Testimonial from "../components/landing/Testimonial";
-import Download from "../components/landing/Download";
+import Hero from "../components/Hero";
+import About from "../components/About";
+import How from "../components/How";
+import Experience from "../components/Experience";
+import Testimonial from "../components/Testimonial";
+import Download from "../components/Download";
 
 export default function LandingPage() {
   return (

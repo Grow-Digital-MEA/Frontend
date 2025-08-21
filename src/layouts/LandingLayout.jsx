@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router";
-import { Footer } from "../components/landing/Footer";
-import { Header } from "../components/landing/Header";
+import { Footer } from "../components/Footer";
+import { Header } from "../components/Header";
 import AOS from "aos";
 
 export default function LandingLayout() {
